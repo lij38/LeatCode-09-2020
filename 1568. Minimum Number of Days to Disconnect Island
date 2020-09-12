@@ -1,0 +1,79 @@
+//Given a binary 2d array, 1 represent land, 0 represent water
+//If all lands vertically or horizontally, then they are considered one island
+//Calculate minimum land-water conversion such that there are at least 2 islands
+
+class Solution {
+
+public:
+    //UnionFind Object to examine remainder graph if all lands are connected
+    class UnionFind {
+        int num, w, h;
+        
+        public:      
+        vector<int> r;
+        UnionFind(int height, int width) {
+            h = height;
+            w = width;
+            num = h*w;
+            for (int i = 0; i<=num; i++) r.push_back(i);
+        }
+        
+        int united() {
+            return num;
+        }
+        
+        //only pass in if 2 points unitable
+        bool unite(int x1, int y1, int x2, int y2) {
+            int d1 = x1*w+y1+1;
+            int d2 = x2*w+y2+1;  
+            if (findUnion(d1) == findUnion(d2)) return false;
+            r[findUnion(d1)] = d2;        
+            num--;
+            return true;
+        }
+        
+        int findUnion(int d) {
+            if (r[d] != d) r[d] = findUnion(r[d]);
+            return r[d];
+        }
+    };
+    
+    
+    int minDays(vector<vector<int>>& grid) {
+        if (connect(grid) > 1) {
+            return 0;
+        }
+        //remove random land index, check if lands still connected
+        for (int i = 0; i < grid.size(); i++) {
+            for (int j = 0; j < grid[0].size(); j++) {
+                if (grid[i][j] == 1) {
+                    grid[i][j] = 0;
+                    int d = connect(grid);
+                    if (d > 1 || d == 0) return 1;
+                    else grid[i][j] = 1;
+                }
+            }
+        }
+        //maximum # of deletion/conversion needed is 2
+        return 2;
+    }
+    
+    int connect(vector<vector<int>>& grid) {
+        int h = grid.size();
+        int w = grid[0].size();
+        int z = 0;
+        UnionFind u(h,w);
+        for (int i = 0; i < h; i++) {
+            for (int j = 0; j < w; j++) {
+                if (grid[i][j]) {      
+                    if (i < h-1 && grid[i+1][j]) u.unite(i,j,i+1,j);
+                    if (i>0 && grid[i-1][j]) u.unite(i,j,i-1,j);
+                    if (j < w-1 && grid[i][j+1]) u.unite(i,j,i,j+1);
+                    if (j>0 && grid[i][j-1]) u.unite(i,j,i,j-1);
+                } else {z++;} 
+            }       
+        }
+        return u.united()-z;
+    }
+    
+};
