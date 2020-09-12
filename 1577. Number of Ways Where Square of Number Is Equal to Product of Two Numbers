@@ -1,0 +1,38 @@
+//Given two arrays of integers nums1 and nums2, return the number of triplets formed (type 1 and type 2) under the following rules:
+
+//Type 1: Triplet (i, j, k) if nums1[i]2 == nums2[j] * nums2[k] where 0 <= i < nums1.length and 0 <= j < k < nums2.length.
+//Type 2: Triplet (i, j, k) if nums2[i]2 == nums1[j] * nums1[k] where 0 <= i < nums2.length and 0 <= j < k < nums1.length.
+ 
+
+
+
+
+class Solution {
+public:
+
+    //I double counted, thus result divided by 2
+    int numTriplets(vector<int>& nums1, vector<int>& nums2) {
+        //scan through each array
+        //get number-occurance pair
+        return (Count(nums1, nums2) + Count(nums2, nums1))/2;
+    }
+    
+    int Count(vector<int>& a1, vector<int>& a) {
+        map<int, int> m;
+        for (int i : a) m[i]++;
+        int r = 0;
+        for (int i = 0; i < a1.size(); i++) {
+            
+            long t = (long)a1[i] * a1[i];
+            for (auto &[j, c] : m){
+                //std::cout << j << " " << a1[i] << std::endl;
+                if (t%j == 0){
+                    if (t/j == j) r += (c * (c-1));
+                    else r += c * m[t/j];
+                }                
+            }
+                
+        }
+        return r;
+    }
+};
