@@ -1,0 +1,41 @@
+//Given an array of distinct positive integers locations where locations[i] represents the position of city i..
+//Given integers start, finish and fuel representing the starting city, ending city, and the initial amount of fuel.
+//At each step, if at city i, can pick any city j such that j != i and 0 <= j < locations.length and move to city j. 
+//Moving from city i to city j reduces the amount of fuel you have by |locations[i] - locations[j]|.
+//Fuel cannot be negative
+//Return the count of all possible routes from start to finish.
+//Since the answer may be too large, return it modulo 10^9 + 7.
+
+ 
+
+
+class Solution {
+public:
+    //Use dynamic programming to track ways to travel from start to i, with j fuel
+    //Whenver encounter the destination, continue, but found one route hence add 1 to total routes
+    //if traveled to one city i, then the problem equates one with i as start, same destination and accordingly reduced fuel amount
+    int countRoutes(vector<int>& locations, int start, int finish, int fuel) {
+        int size = locations.size();
+        long dp[100][201] = {-1};
+        for (int i = 0; i < 100 ; i++) {
+            for (int j = 0; j < 201; j++) {
+                dp[i][j] = -1;
+            }
+        }
+        return (int)count(dp, start, finish, fuel, size, locations);
+    }
+    
+    long count(long dp[100][201], int s, int f, int fuel, int size, vector<int> & l) {
+        if (fuel < 0) return 0;
+        else if (dp[s][fuel] != -1) return dp[s][fuel];
+        else {
+            long r = s==f? 1: 0;    
+            for (int i = 0; i < size; i++) {
+                if (i == s) {continue;}
+                r = (r + (count(dp, i, f, fuel - abs(l[i] - l[s]), size, l)))%1000000007;
+            }
+            dp[s][fuel] = r;
+            return r;
+        }
+    }
+};
