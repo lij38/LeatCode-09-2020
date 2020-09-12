@@ -1,0 +1,37 @@
+// Given a string s and an array of integers cost where cost[i] is the cost of deleting the ith character in s.
+// Return the minimum cost of deletions such that there are no two identical letters next to each other.
+
+class Solution {
+public:
+
+//memorize previous char, if repeating then keep recording which deleting cost is max, then it's the char to keep
+//sum all deletions
+int minCost(string s, vector<int>& cost) {
+    //scan through, if next the same as previous delete
+    //aaabbaa
+    char p = s[0];
+    int mc = cost[0];
+    int mci = 0;
+    int result = 0;
+    int sum = cost[0];
+    s+= ']';
+    for (auto i = 1; i < s.length(); i++) {    
+        if (p != s[i]) {
+            result += (sum - mc);
+            if (i != s.length()-1) {
+                sum = cost[i];
+                mc = cost[i];
+                mci = i;
+                p = s[i];
+            }
+            continue;
+        }
+        sum += cost[i];
+        if (mc < cost[i]) {
+            mc = cost[i];
+            mci = i;
+        }
+    }
+    return result;
+}
+};
