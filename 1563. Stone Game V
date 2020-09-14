@@ -1,0 +1,52 @@
+//There are several stones arranged in a row, and each stone has an associated value which is an integer given in the array stoneValue. E.G [1,2,3,4,5]
+
+//In each round of the game, divide the row into two non-empty rows (i.e. left row and right row), calculates the value of each row which is the sum of the values of all the stones in this row. 
+
+//Throw away the row which has the maximum value, and score increases by the value of the remaining row. If the value of the two rows are equal, then can choose to throw arbitrary row.
+
+//The next round starts with the remaining row.
+
+//The game ends when there is only one stone remaining. Score is initially zero.
+
+//Return the maximum score that can be obtained.
+
+
+
+class Solution {
+public:
+    int stoneGameV(vector<int>& sval) {
+        int l = sval.size();
+        int dp[500][500];
+        int sum[500][500];
+        for (int i = 0; i < l; i++) {
+            for (int j = i; j < l; j++) {
+                if (j == i) {sum[i][j] = sval[j]; continue;}
+                sum[i][j] = sum[i][j-1] + sval[j];
+            }
+        }        
+        
+        int b = 0;
+        int r = 0;
+        int m = 0;
+        for(int i = 0; i < l; i++) {
+            for (int j = 0; j < l-i; j++) {
+                b = i+j;
+                if (b == j) {dp[j][b] = 0; continue;}
+                if (b - j == 1) {dp[j][b] = min(sval[b], sval[j]);continue;}
+                r = 0;
+                for (int k = j; k <b; k++) {
+                    m = 0;
+                    if (sum[j][k] == sum[k+1][b]) m = max(sum[j][k] + dp[j][k], sum[k+1][b] + dp[k+1][b]);
+                    else if (sum[j][k] > sum[k+1][b]) m = sum[k+1][b] + dp[k+1][b];
+                    else m = sum[j][k] + dp[j][k];
+                    
+                    if(m > r) r = m;
+                }
+                dp[j][b] = r;
+
+            }
+        }
+        return dp[0][l-1];
+        
+    }
+};
